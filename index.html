@@ -1,0 +1,334 @@
+<!doctype html>
+<html lang="ko">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="theme-color" content="#f5f7f8" />
+    <meta
+      name="description"
+      content="사진과 방향 안내를 따라 지하철역 안을 편하게 이동하는 Metro-Guide AR"
+    />
+    <title>Metro-Guide AR | 역 안 길안내</title>
+    <style>
+      :root {
+        color-scheme: light;
+        --ink: #172a3a;
+        --muted: #748394;
+        --blue: #1769e0;
+        --lime: #d7ed73;
+        --page: #10191e;
+        font-family: Inter, "Noto Sans KR", "Apple SD Gothic Neo", sans-serif;
+        font-synthesis: none;
+        text-rendering: optimizeLegibility;
+        -webkit-font-smoothing: antialiased;
+      }
+
+      * { box-sizing: border-box; }
+      body { min-width: 320px; min-height: 100svh; margin: 0; background: var(--page); color: #fff; }
+      button { color: inherit; font: inherit; }
+      [hidden] { display: none !important; }
+      .app { min-height: 100svh; }
+      .topbar { position: absolute; z-index: 4; inset: 30px 34px auto; display: flex; align-items: start; justify-content: space-between; gap: 20px; pointer-events: none; }
+      .brand { display: flex; align-items: center; gap: 13px; }
+      .brand-icon { display: grid; width: 43px; height: 43px; place-items: center; border: 1px solid rgb(255 255 255 / 45%); border-radius: 50%; background: rgb(255 255 255 / 14%); color: var(--lime); font-size: 20px; backdrop-filter: blur(8px); }
+      .brand-name { display: grid; gap: 4px; padding-top: 3px; text-shadow: 0 1px 9px rgb(0 0 0 / 38%); }
+      .brand-name strong { font-size: 17px; letter-spacing: -.04em; }
+      .brand-name span { color: rgb(255 255 255 / 76%); font-size: 10px; letter-spacing: .09em; }
+      .back-to-search { display: inline-flex; min-height: 42px; align-items: center; gap: 8px; padding: 0 14px; border: 1px solid rgb(255 255 255 / 35%); background: rgb(16 25 30 / 60%); color: #fff; cursor: pointer; font-size: 12px; font-weight: 650; pointer-events: auto; backdrop-filter: blur(8px); }
+      .back-to-search:hover { background: rgb(16 25 30 / 82%); }
+      .search-screen { min-height: 100svh; padding: 34px 22px 48px; background: #f5f7fa; color: var(--ink); }
+      .search-content { width: min(100%, 560px); margin: 0 auto; }
+      .search-brand { display: flex; align-items: center; gap: 11px; margin-bottom: clamp(62px, 13vh, 118px); }
+      .search-brand .brand-icon { width: 40px; height: 40px; border: 0; background: var(--blue); color: #fff; font-size: 21px; }
+      .search-brand .brand-name { text-shadow: none; }
+      .search-brand .brand-name strong { color: var(--ink); }
+      .search-brand .brand-name span { color: var(--muted); }
+      .search-heading { margin: 0; font-size: clamp(30px, 7vw, 42px); font-weight: 750; letter-spacing: -.07em; }
+      .search-description { margin: 10px 0 30px; color: var(--muted); font-size: 14px; line-height: 1.7; }
+      .search-form { position: relative; }
+      .search-icon { position: absolute; top: 50%; left: 17px; width: 21px; height: 21px; color: #7d8b9b; pointer-events: none; transform: translateY(-50%); }
+      .station-search { width: 100%; height: 58px; padding: 0 18px 0 49px; border: 1px solid #dfe5ec; border-radius: 13px; outline: none; background: #fff; color: var(--ink); font: inherit; font-size: 15px; box-shadow: 0 5px 16px rgb(23 42 58 / 4%); transition: border-color .2s, box-shadow .2s; }
+      .station-search::placeholder { color: #a0aab6; }
+      .station-search:focus { border-color: #73a4ed; box-shadow: 0 0 0 4px rgb(23 105 224 / 10%); }
+      .results-heading { display: flex; align-items: center; justify-content: space-between; margin: 31px 2px 12px; color: #526579; font-size: 12px; font-weight: 700; }
+      .results-heading span:last-child { color: #929eaa; font-size: 11px; font-weight: 500; }
+      .station-results { display: grid; gap: 10px; }
+      .station-result { display: flex; width: 100%; min-height: 82px; align-items: center; gap: 14px; padding: 14px 16px; border: 1px solid #e6ebf0; border-radius: 14px; background: #fff; color: var(--ink); cursor: pointer; text-align: left; box-shadow: 0 4px 13px rgb(23 42 58 / 3%); transition: border-color .18s, transform .18s, box-shadow .18s; }
+      .station-result:hover { border-color: #b7cfee; box-shadow: 0 7px 20px rgb(23 42 58 / 8%); transform: translateY(-1px); }
+      .station-result:focus-visible { outline: 3px solid #8fc1ff; outline-offset: 3px; }
+      .line-number { display: grid; width: 42px; height: 42px; flex: 0 0 auto; place-items: center; border-radius: 50%; background: #72b544; color: #fff; font-size: 17px; font-weight: 800; }
+      .station-result-copy { display: grid; flex: 1; gap: 5px; }
+      .station-result-copy strong { font-size: 15px; letter-spacing: -.03em; }
+      .station-result-copy span { color: var(--muted); font-size: 11px; }
+      .result-arrow { color: #91a0b0; font-size: 21px; }
+      .empty-results { padding: 24px 16px; border: 1px dashed #d6dee7; border-radius: 13px; color: #718094; font-size: 13px; text-align: center; }
+      .search-footnote { margin: 19px 3px 0; color: #98a3af; font-size: 11px; line-height: 1.7; }
+      main { min-height: 100svh; }
+      .viewer { position: relative; overflow: hidden; width: 100%; min-height: 540px; height: 100svh; background: #253747; isolation: isolate; }
+      .scene { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; object-position: center; transition: opacity .24s ease, transform .65s ease; }
+      .scene.is-changing { opacity: .25; transform: scale(1.015); }
+      .viewer::after { position: absolute; z-index: 1; inset: 0; background: linear-gradient(180deg, rgb(5 11 15 / 40%), transparent 25%, transparent 57%, rgb(5 11 15 / 59%)); content: ""; pointer-events: none; }
+      .photo-tag { position: absolute; z-index: 2; top: 96px; left: 34px; display: grid; gap: 5px; color: #fff; text-shadow: 0 1px 8px rgb(0 0 0 / 45%); }
+      .photo-tag span { color: rgb(255 255 255 / 72%); font-size: 10px; letter-spacing: .1em; }
+      .photo-tag strong { font-size: 15px; }
+      .direction-controls { position: absolute; z-index: 3; top: 72%; left: 53%; display: flex; flex-direction: column; align-items: center; gap: 14px; transform: translate(-50%, -14%); }
+      .direction-option { display: flex; flex-direction: column; align-items: center; gap: 4px; }
+      .nav-arrow { display: grid; width: 64px; height: 64px; place-items: center; border: 2px solid rgb(255 255 255 / 78%); border-radius: 50%; background: rgb(255 255 255 / 91%); color: #283334; cursor: pointer; box-shadow: 0 4px 15px rgb(0 0 0 / 20%); transition: background .18s ease, color .18s ease, transform .18s ease, opacity .18s ease; }
+      .nav-arrow:hover:not(:disabled) { background: var(--lime); transform: scale(1.08); }
+      .nav-arrow:focus-visible { outline: 3px solid var(--lime); outline-offset: 4px; }
+      .nav-arrow:disabled { cursor: not-allowed; opacity: .9; }
+      .nav-arrow svg { width: 25px; height: 25px; }
+      .direction-label { padding: 5px 9px; background: rgb(16 19 18 / 73%); color: #fff; font-size: 11px; font-weight: 650; text-shadow: 0 1px 3px rgb(0 0 0 / 45%); }
+      @media (max-width: 700px) {
+        .search-screen { padding: 22px 20px 36px; }
+        .search-brand { margin-bottom: clamp(70px, 15vh, 124px); }
+        .search-description { margin-bottom: 25px; font-size: 13px; }
+        .station-search { height: 56px; }
+        .results-heading { margin-top: 27px; }
+        .station-result { min-height: 78px; }
+        .viewer { min-height: 100svh; height: 100svh; }
+        .topbar { inset: 18px 16px auto; }
+        .brand { gap: 9px; }
+        .brand-icon { width: 37px; height: 37px; }
+        .brand-name strong { font-size: 14px; }
+        .brand-name span { font-size: 8px; }
+        .back-to-search { min-height: 38px; gap: 5px; padding: 0 10px; font-size: 11px; }
+        .photo-tag { top: 20px; left: 16px; transform: translateY(57px); }
+        .photo-tag strong { font-size: 13px; }
+        .direction-controls { top: 70%; left: 54%; gap: 11px; transform: translate(-50%, -12%); }
+        .nav-arrow { width: 56px; height: 56px; }
+        .direction-label { font-size: 10px; }
+      }
+
+      @media (max-width: 380px) {
+        .topbar { inset-inline: 12px; }
+        .photo-tag { left: 12px; }
+        .direction-controls { left: 56%; }
+      }
+
+      @media (prefers-reduced-motion: reduce) {
+        *, *::before, *::after { scroll-behavior: auto !important; transition-duration: .01ms !important; }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="app">
+      <main>
+        <section class="search-screen" id="search-screen" aria-labelledby="search-title">
+          <div class="search-content">
+            <div class="search-brand" aria-label="Metro-Guide">
+              <span class="brand-icon" aria-hidden="true">M</span>
+              <span class="brand-name"><strong>Metro-Guide</strong><span>STATION WAYFINDING</span></span>
+            </div>
+            <h1 class="search-heading" id="search-title">지하철역 검색</h1>
+            <p class="search-description">길안내를 시작할 역을 검색하고 선택해 주세요.</p>
+            <form class="search-form" id="search-form" role="search">
+              <svg class="search-icon" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                <circle cx="10.8" cy="10.8" r="6.8" stroke="currentColor" stroke-width="1.8" />
+                <path d="m16 16 4.2 4.2" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" />
+              </svg>
+              <input
+                class="station-search"
+                id="station-search"
+                type="search"
+                placeholder="역 이름이나 호선을 입력하세요"
+                autocomplete="off"
+                aria-label="지하철역 검색"
+                aria-controls="station-results"
+              />
+            </form>
+            <div class="results-heading"><span>검색 가능한 역</span><span id="results-count">1개 역</span></div>
+            <div class="station-results" id="station-results" aria-live="polite"></div>
+            <p class="search-footnote">현재 길안내를 이용할 수 있는 역을 표시합니다.</p>
+          </div>
+        </section>
+
+        <section id="guide-screen" aria-label="역 내부 길안내" hidden>
+          <header class="topbar">
+            <div class="brand" aria-label="역 안 길찾기">
+              <span class="brand-icon" aria-hidden="true">↗</span>
+              <span class="brand-name"><strong>역 안 길찾기</strong><span>STATION STREET VIEW</span></span>
+            </div>
+            <button class="back-to-search" id="back-to-search" type="button" aria-label="역 검색으로 돌아가기">
+              <span aria-hidden="true">←</span> 역 검색
+            </button>
+          </header>
+          <section class="viewer" aria-label="역 내부 길안내 사진">
+          <img
+            class="scene"
+            id="scene-image"
+            tabindex="-1"
+            src="image1.jpg"
+            alt="검바위역 승강장 통로와 노란 점자블록"
+            fetchpriority="high"
+          />
+          <div class="photo-tag"><span>인천 2호선 · 검바위역</span><strong>현재 위치</strong></div>
+          <div class="direction-controls" aria-label="이동 방향 선택">
+            <div class="direction-option">
+              <button class="nav-arrow nav-forward" id="forward-button" type="button" aria-label="앞으로 이동" title="앞으로 이동">
+                <svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M12 19V5m0 0L6.5 10.5M12 5l5.5 5.5" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" /></svg>
+              </button>
+              <span class="direction-label">계단 방향</span>
+            </div>
+            <div class="direction-option">
+              <button class="nav-arrow nav-back" id="back-button" type="button" aria-label="뒤로 이동" title="뒤로 이동">
+                <svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M12 5v14m0 0 5.5-5.5M12 19l-5.5-5.5" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" /></svg>
+              </button>
+              <span class="direction-label">뒤쪽 통로</span>
+            </div>
+          </div>
+          </section>
+        </section>
+      </main>
+    </div>
+
+    <script>
+      const locations = [
+        {
+          image: "image1.jpg",
+          alt: "검바위역 승강장 통로와 노란 점자블록",
+          name: "승강장 통로",
+          forwardLabel: "계단 방향",
+          backLabel: "뒤쪽 통로",
+        },
+        {
+          image: "image2.jpg",
+          alt: "검바위역 계단 입구와 승강장",
+          name: "계단",
+          forwardLabel: "개찰구 방향",
+          backLabel: "승강장 방향",
+        },
+        {
+          image: "image3.jpg",
+          alt: "검바위역 개찰구와 에스컬레이터",
+          name: "개찰구",
+          forwardLabel: "출구 방향",
+          backLabel: "계단 방향",
+        },
+      ];
+
+      const image = document.querySelector("#scene-image");
+      const searchScreen = document.querySelector("#search-screen");
+      const guideScreen = document.querySelector("#guide-screen");
+      const searchInput = document.querySelector("#station-search");
+      const stationResults = document.querySelector("#station-results");
+      const resultsCount = document.querySelector("#results-count");
+      const backToSearch = document.querySelector("#back-to-search");
+      const backButton = document.querySelector("#back-button");
+      const forwardButton = document.querySelector("#forward-button");
+      const forwardLabel = document.querySelector(".nav-forward + .direction-label");
+      const backLabel = document.querySelector(".nav-back + .direction-label");
+      let currentStep = 0;
+      let touchStartY = null;
+      const stations = [
+        {
+          name: "검바위역",
+          line: "인천 2호선",
+          area: "인천광역시 서구",
+          searchTerms: ["검바위역", "검바위", "인천 2호선", "인천2호선", "2호선"],
+        },
+      ];
+
+      function renderStationResults(query = "") {
+        const normalizedQuery = query.toLocaleLowerCase("ko-KR").replace(/\s/g, "");
+        const filteredStations = stations.filter((station) => (
+          !normalizedQuery || station.searchTerms.some((term) => {
+            const normalizedTerm = term.toLocaleLowerCase("ko-KR").replace(/\s/g, "");
+            return normalizedTerm.includes(normalizedQuery) || normalizedQuery.includes(normalizedTerm);
+          })
+        ));
+
+        stationResults.replaceChildren();
+        resultsCount.textContent = `${filteredStations.length}개 역`;
+
+        if (filteredStations.length === 0) {
+          const emptyMessage = document.createElement("div");
+          emptyMessage.className = "empty-results";
+          emptyMessage.textContent = "검색 결과가 없습니다. 역 이름이나 호선을 다시 확인해 주세요.";
+          stationResults.append(emptyMessage);
+          return;
+        }
+
+        filteredStations.forEach((station) => {
+          const resultButton = document.createElement("button");
+          resultButton.className = "station-result";
+          resultButton.type = "button";
+          resultButton.setAttribute("aria-label", `${station.name}, ${station.line}, 길안내 시작`);
+          resultButton.innerHTML = `
+            <span class="line-number" aria-hidden="true">2</span>
+            <span class="station-result-copy">
+              <strong>${station.name}</strong>
+              <span>${station.line} · ${station.area}</span>
+            </span>
+            <span class="result-arrow" aria-hidden="true">›</span>
+          `;
+          resultButton.addEventListener("click", () => {
+            showStep(0);
+            searchScreen.hidden = true;
+            guideScreen.hidden = false;
+            image.focus({ preventScroll: true });
+          });
+          stationResults.append(resultButton);
+        });
+      }
+
+      document.querySelector("#search-form").addEventListener("submit", (event) => {
+        event.preventDefault();
+        renderStationResults(searchInput.value);
+        stationResults.querySelector(".station-result")?.focus();
+      });
+
+      searchInput.addEventListener("input", () => renderStationResults(searchInput.value));
+
+      backToSearch.addEventListener("click", () => {
+        guideScreen.hidden = true;
+        searchScreen.hidden = false;
+        searchInput.focus();
+      });
+
+      function showStep(nextStep) {
+        if (nextStep < 0 || nextStep >= locations.length || nextStep === currentStep) return;
+
+        currentStep = nextStep;
+        const location = locations[currentStep];
+        image.classList.add("is-changing");
+        window.setTimeout(() => {
+          image.src = location.image;
+          image.alt = location.alt;
+          image.classList.remove("is-changing");
+        }, 120);
+
+        forwardLabel.textContent = location.forwardLabel;
+        backLabel.textContent = location.backLabel;
+        backButton.disabled = currentStep === 0;
+        forwardButton.disabled = currentStep === locations.length - 1;
+      }
+
+      backButton.addEventListener("click", () => showStep(currentStep - 1));
+      forwardButton.addEventListener("click", () => showStep(currentStep + 1));
+
+      document.addEventListener("keydown", (event) => {
+        if (guideScreen.hidden) return;
+        if (event.altKey || event.ctrlKey || event.metaKey || event.shiftKey) return;
+        if (event.key === "ArrowUp") showStep(currentStep + 1);
+        if (event.key === "ArrowDown") showStep(currentStep - 1);
+      });
+
+      image.addEventListener("touchstart", (event) => {
+        touchStartY = event.changedTouches[0].clientY;
+      }, { passive: true });
+
+      image.addEventListener("touchend", (event) => {
+        if (touchStartY === null) return;
+        const distance = event.changedTouches[0].clientY - touchStartY;
+        if (Math.abs(distance) > 50) showStep(currentStep + (distance < 0 ? 1 : -1));
+        touchStartY = null;
+      }, { passive: true });
+
+      backButton.disabled = true;
+      forwardLabel.textContent = locations[0].forwardLabel;
+      backLabel.textContent = locations[0].backLabel;
+      renderStationResults();
+    </script>
+  </body>
+</html>
