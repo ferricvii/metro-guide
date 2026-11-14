@@ -71,14 +71,33 @@
       .photo-tag { position: absolute; z-index: 2; top: 96px; left: 34px; display: grid; gap: 5px; color: #fff; text-shadow: 0 1px 8px rgb(0 0 0 / 45%); }
       .photo-tag span { color: rgb(255 255 255 / 72%); font-size: 10px; letter-spacing: .1em; }
       .photo-tag strong { font-size: 15px; }
-      .direction-controls { position: absolute; z-index: 3; top: 72%; left: 53%; display: flex; flex-direction: column; align-items: center; gap: 14px; transform: translate(-50%, -14%); }
-      .direction-option { display: flex; flex-direction: column; align-items: center; gap: 4px; }
-      .nav-arrow { display: grid; width: 64px; height: 64px; place-items: center; border: 2px solid rgb(255 255 255 / 78%); border-radius: 50%; background: rgb(255 255 255 / 91%); color: #283334; cursor: pointer; box-shadow: 0 4px 15px rgb(0 0 0 / 20%); transition: background .18s ease, color .18s ease, transform .18s ease, opacity .18s ease; }
-      .nav-arrow:hover:not(:disabled) { background: var(--lime); transform: scale(1.08); }
+      .direction-screen { display: grid; min-height: 100svh; place-items: center; padding: 24px; background: #f5f7fa; color: var(--ink); }
+      .direction-content { width: min(100%, 520px); }
+      .direction-back { margin-bottom: 36px; padding: 9px 0; border: 0; background: transparent; color: #526579; cursor: pointer; font-size: 13px; font-weight: 650; }
+      .direction-heading { margin: 0; font-size: clamp(26px, 6vw, 36px); letter-spacing: -.06em; }
+      .direction-description { margin: 10px 0 24px; color: var(--muted); font-size: 14px; line-height: 1.7; }
+      .direction-options { display: grid; gap: 12px; }
+      .direction-choice { display: flex; min-height: 86px; align-items: center; justify-content: space-between; padding: 18px 20px; border: 1px solid #e1e7ee; border-radius: 14px; background: #fff; color: var(--ink); cursor: pointer; text-align: left; box-shadow: 0 4px 13px rgb(23 42 58 / 3%); }
+      .direction-choice:hover { border-color: #b7cfee; box-shadow: 0 7px 20px rgb(23 42 58 / 8%); }
+      .direction-choice:focus-visible { outline: 3px solid #8fc1ff; outline-offset: 3px; }
+      .direction-choice span:first-child { display: grid; gap: 6px; }
+      .direction-choice strong { font-size: 16px; }
+      .direction-choice small { color: var(--muted); font-size: 12px; }
+      .direction-choice .result-arrow { font-size: 24px; }
+      .direction-controls { position: absolute; z-index: 3; top: 78%; left: 50%; width: min(100%, 420px); height: min(32vh, 260px); min-height: 200px; transform: translate(-50%, -50%); pointer-events: none; }
+      .nav-arrow { position: absolute; display: grid; width: 64px; height: 64px; place-items: center; border: 2px solid rgb(255 255 255 / 82%); border-radius: 50%; background: rgb(255 255 255 / 94%); color: #283334; cursor: pointer; box-shadow: 0 4px 15px rgb(0 0 0 / 24%); transition: background .18s ease, color .18s ease, transform .18s ease, opacity .18s ease; pointer-events: auto; }
+      .nav-up { top: 0; left: 50%; transform: translateX(-50%); }
+      .nav-down { bottom: 0; left: 50%; transform: translateX(-50%); }
+      .nav-left { top: 50%; left: 0; transform: translateY(-50%); }
+      .nav-right { top: 50%; right: 0; transform: translateY(-50%); }
+      .nav-up-left { top: 18%; left: 25%; transform: translate(-50%, -50%); }
+      .nav-down-left { bottom: 18%; left: 25%; transform: translate(-50%, 50%); }
+      .nav-up-right { top: 18%; right: 25%; transform: translate(50%, -50%); }
+      .nav-down-right { right: 25%; bottom: 18%; transform: translate(50%, 50%); }
+      .nav-arrow:hover:not(:disabled) { background: var(--lime); }
       .nav-arrow:focus-visible { outline: 3px solid var(--lime); outline-offset: 4px; }
-      .nav-arrow:disabled { cursor: not-allowed; opacity: .9; }
       .nav-arrow svg { width: 25px; height: 25px; }
-      .direction-label { padding: 5px 9px; background: rgb(16 19 18 / 73%); color: #fff; font-size: 11px; font-weight: 650; text-shadow: 0 1px 3px rgb(0 0 0 / 45%); }
+      .photo-error { position: absolute; z-index: 3; right: 16px; bottom: 18px; left: 16px; padding: 12px; background: rgb(70 15 15 / 90%); color: #fff; font-size: 13px; text-align: center; }
       @media (max-width: 700px) {
         .search-screen { padding: 22px 20px 36px; }
         .search-brand { margin-bottom: clamp(70px, 15vh, 124px); }
@@ -95,15 +114,15 @@
         .back-to-search { min-height: 38px; gap: 5px; padding: 0 10px; font-size: 11px; }
         .photo-tag { top: 20px; left: 16px; transform: translateY(57px); }
         .photo-tag strong { font-size: 13px; }
-        .direction-controls { top: 70%; left: 54%; gap: 11px; transform: translate(-50%, -12%); }
+        .direction-controls { top: 78%; width: min(100% - 32px, 380px); height: min(30vh, 230px); min-height: 180px; }
         .nav-arrow { width: 56px; height: 56px; }
-        .direction-label { font-size: 10px; }
+        .direction-content { padding: 12px 4px; }
       }
 
       @media (max-width: 380px) {
         .topbar { inset-inline: 12px; }
         .photo-tag { left: 12px; }
-        .direction-controls { left: 56%; }
+        .direction-controls { width: calc(100% - 28px); }
       }
 
       @media (prefers-reduced-motion: reduce) {
@@ -143,14 +162,30 @@
           </div>
         </section>
 
+        <section class="direction-screen" id="direction-screen" aria-labelledby="direction-title" hidden>
+          <div class="direction-content">
+            <button class="direction-back" id="direction-back" type="button">← 역 검색</button>
+            <h1 class="direction-heading" id="direction-title">지하철 방향을 선택해 주세요</h1>
+            <p class="direction-description">1호선 온양온천역에서 이동할 방향을 선택하면 해당 위치의 사진이 표시됩니다.</p>
+            <div class="direction-options">
+              <button class="direction-choice" type="button" data-start-photo="1">
+                <span><strong>아산 방향</strong><small>온양온천역 승강장 길안내</small></span><span class="result-arrow" aria-hidden="true">›</span>
+              </button>
+              <button class="direction-choice" type="button" data-start-photo="24">
+                <span><strong>신창 방향</strong><small>온양온천역 승강장 길안내</small></span><span class="result-arrow" aria-hidden="true">›</span>
+              </button>
+            </div>
+          </div>
+        </section>
+
         <section id="guide-screen" aria-label="역 내부 길안내" hidden>
           <header class="topbar">
             <div class="brand" aria-label="역 안 길찾기">
               <span class="brand-icon" aria-hidden="true">↗</span>
-              <span class="brand-name"><strong>역 안 길찾기</strong><span>STATION STREET VIEW</span></span>
+              <span class="brand-name"><strong id="station-name">온양온천역 길안내</strong><span>STATION STREET VIEW</span></span>
             </div>
-            <button class="back-to-search" id="back-to-search" type="button" aria-label="역 검색으로 돌아가기">
-              <span aria-hidden="true">←</span> 역 검색
+            <button class="back-to-search" id="back-to-search" type="button" aria-label="지하철 방향 선택으로 돌아가기">
+              <span aria-hidden="true">←</span> <span id="back-label">방향 선택</span>
             </button>
           </header>
           <section class="viewer" aria-label="역 내부 길안내 사진">
@@ -158,76 +193,175 @@
             class="scene"
             id="scene-image"
             tabindex="-1"
-            src="image1.jpg"
-            alt="검바위역 승강장 통로와 노란 점자블록"
+            src="Line_1_Onyangoncheon_Station/1.webp"
+            alt="온양온천역 사진 1번"
             fetchpriority="high"
           />
-          <div class="photo-tag"><span>인천 2호선 · 검바위역</span><strong>현재 위치</strong></div>
           <div class="direction-controls" aria-label="이동 방향 선택">
-            <div class="direction-option">
-              <button class="nav-arrow nav-forward" id="forward-button" type="button" aria-label="앞으로 이동" title="앞으로 이동">
-                <svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M12 19V5m0 0L6.5 10.5M12 5l5.5 5.5" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" /></svg>
-              </button>
-              <span class="direction-label">계단 방향</span>
-            </div>
-            <div class="direction-option">
-              <button class="nav-arrow nav-back" id="back-button" type="button" aria-label="뒤로 이동" title="뒤로 이동">
-                <svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M12 5v14m0 0 5.5-5.5M12 19l-5.5-5.5" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" /></svg>
-              </button>
-              <span class="direction-label">뒤쪽 통로</span>
-            </div>
+            <button class="nav-arrow nav-up" id="up-button" type="button" aria-label="다음 사진으로 이동" title="다음 사진으로 이동" hidden>
+              <svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M12 19V5m0 0L6.5 10.5M12 5l5.5 5.5" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" /></svg>
+            </button>
+            <button class="nav-arrow nav-down" id="down-button" type="button" aria-label="이전 사진으로 이동" title="이전 사진으로 이동">
+              <svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M12 5v14m0 0 5.5-5.5M12 19l-5.5-5.5" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" /></svg>
+            </button>
+            <button class="nav-arrow nav-left" id="left-button" type="button" aria-label="왼쪽 사진으로 이동" title="왼쪽 사진으로 이동" hidden>
+              <svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M19 12H5m0 0 5.5-5.5M5 12l5.5 5.5" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" /></svg>
+            </button>
+            <button class="nav-arrow nav-right" id="right-button" type="button" aria-label="오른쪽 사진으로 이동" title="오른쪽 사진으로 이동" hidden>
+              <svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M5 12h14m0 0-5.5-5.5M19 12l-5.5 5.5" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" /></svg>
+            </button>
+            <button class="nav-arrow nav-up-left" id="up-left-button" type="button" aria-label="왼쪽 위 사진으로 이동" title="왼쪽 위 사진으로 이동" hidden>
+              <svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M19 19 5 5m0 0v7m0-7h7" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" /></svg>
+            </button>
+            <button class="nav-arrow nav-down-left" id="down-left-button" type="button" aria-label="왼쪽 아래 사진으로 이동" title="왼쪽 아래 사진으로 이동" hidden>
+              <svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M19 5 5 19m0 0v-7m0 7h7" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" /></svg>
+            </button>
+            <button class="nav-arrow nav-up-right" id="up-right-button" type="button" aria-label="오른쪽 위 사진으로 이동" title="오른쪽 위 사진으로 이동" hidden>
+              <svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M5 19 19 5m0 0h-7m7 0v7" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" /></svg>
+            </button>
+            <button class="nav-arrow nav-down-right" id="down-right-button" type="button" aria-label="오른쪽 아래 사진으로 이동" title="오른쪽 아래 사진으로 이동" hidden>
+              <svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M5 5 19 19m0 0v-7m0 7h-7" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" /></svg>
+            </button>
           </div>
+          <div class="photo-error" id="photo-error" role="alert" hidden></div>
           </section>
         </section>
       </main>
     </div>
 
     <script>
-      const locations = [
-        {
-          image: "image1.jpg",
-          alt: "검바위역 승강장 통로와 노란 점자블록",
-          name: "승강장 통로",
-          forwardLabel: "계단 방향",
-          backLabel: "뒤쪽 통로",
-        },
-        {
-          image: "image2.jpg",
-          alt: "검바위역 계단 입구와 승강장",
-          name: "계단",
-          forwardLabel: "개찰구 방향",
-          backLabel: "승강장 방향",
-        },
-        {
-          image: "image3.jpg",
-          alt: "검바위역 개찰구와 에스컬레이터",
-          name: "개찰구",
-          forwardLabel: "출구 방향",
-          backLabel: "계단 방향",
-        },
-      ];
-
       const image = document.querySelector("#scene-image");
       const searchScreen = document.querySelector("#search-screen");
+      const directionScreen = document.querySelector("#direction-screen");
       const guideScreen = document.querySelector("#guide-screen");
       const searchInput = document.querySelector("#station-search");
       const stationResults = document.querySelector("#station-results");
       const resultsCount = document.querySelector("#results-count");
       const backToSearch = document.querySelector("#back-to-search");
-      const backButton = document.querySelector("#back-button");
-      const forwardButton = document.querySelector("#forward-button");
-      const forwardLabel = document.querySelector(".nav-forward + .direction-label");
-      const backLabel = document.querySelector(".nav-back + .direction-label");
-      let currentStep = 0;
-      let touchStartY = null;
+      const backLabel = document.querySelector("#back-label");
+      const stationTitle = document.querySelector("#station-name");
+      const photoError = document.querySelector("#photo-error");
+      const buttons = {
+        up: document.querySelector("#up-button"),
+        down: document.querySelector("#down-button"),
+        left: document.querySelector("#left-button"),
+        right: document.querySelector("#right-button"),
+        upLeft: document.querySelector("#up-left-button"),
+        downLeft: document.querySelector("#down-left-button"),
+        upRight: document.querySelector("#up-right-button"),
+        downRight: document.querySelector("#down-right-button"),
+      };
+      let currentPhoto = null;
+      let photoHistory = [];
       const stations = [
         {
-          name: "검바위역",
-          line: "인천 2호선",
-          area: "인천광역시 서구",
-          searchTerms: ["검바위역", "검바위", "인천 2호선", "인천2호선", "2호선"],
+          id: "onyang",
+          name: "온양온천역",
+          line: "1호선",
+          lineNumber: "1",
+          area: "충청남도 아산시",
+          searchTerms: ["온양온천역", "온양온천", "온양", "1호선"],
+          imageFolder: "Line_1_Onyangoncheon_Station",
+          routeSet: "onyang",
+          chooseDirection: true,
+          historyBack: true,
+        },
+        {
+          id: "sinchang",
+          name: "신창역",
+          line: "1호선",
+          lineNumber: "1",
+          area: "충청남도 아산시",
+          searchTerms: ["신창역", "신창", "순천향대", "1호선"],
+          imageFolder: "Line_1_Sinchang_Station",
+          routeSet: "sinchang",
+          chooseDirection: false,
+          startPhoto: 1,
+          historyBack: false,
         },
       ];
+      const photoRoutes = {
+        1: { left: 2, right: 3 },
+        2: { up: 4 },
+        3: { up: 9 },
+        4: { up: 6, down: 5 },
+        5: { up: 1 },
+        6: { up: 7 },
+        7: { up: 14, down: 8 },
+        8: { up: 5 },
+        9: { up: 10, down: 53 },
+        10: { up: 15, down: 11 },
+        11: { up: 53 },
+        14: { up: 20, down: 13 },
+        15: { up: 20, down: 12 },
+        17: { up: 27 },
+        18: { up: 45, down: 16 },
+        19: { up: 45, down: 17 },
+        20: { up: 45 },
+        21: { up: 23 },
+        22: { up: 18, down: 21 },
+        23: { up: 24 },
+        24: { left: 25, right: 26 },
+        25: { up: 28 },
+        26: { up: 22 },
+        27: { up: 29 },
+        28: { up: 19, down: 27 },
+        29: { up: 24 },
+        30: { up: 31, down: 46 },
+        31: { up: 32, down: 44 },
+        32: { left: 33, right: 34, down: 44 },
+        33: { up: 36, down: 44 },
+        34: { up: 35, down: 44 },
+        35: { down: 40 },
+        36: { down: 38 },
+        38: { up: 42 },
+        40: { up: 41 },
+        41: { up: 44 },
+        42: { up: 44 },
+        44: { up: 46 },
+        45: { up: 30 },
+        46: { upLeft: 47, downLeft: 49, upRight: 48, downRight: 17 },
+        47: { up: 11 },
+        48: { up: 21 },
+        49: { up: 8 },
+        53: { up: 1 },
+      };
+      const sinchangRoutes = {
+        1: { left: 3, right: 2 },
+        2: { down: 1 },
+        3: { up: 4, down: 1 },
+        4: { up: 6, down: 3 },
+        6: { up: 7, down: 4 },
+        7: { up: 23, down: 6, left: 22 },
+        22: { down: 7, right: 21, left: 8 },
+        21: { up: 20, down: 22 },
+        8: { up: 9, down: 22 },
+        9: { up: 10, left: 14 },
+        10: { left: 11, right: 12 },
+        11: { down: 10 },
+        12: { up: 13, down: 10 },
+        13: { up: 24, down: 12, right: 14 },
+        24: { up: 23, down: 13, left: 20 },
+        14: { up: 15, left: 13 },
+        15: { up: 14, down: 17 },
+        17: { up: 15, right: 18 },
+        18: { up: 20, left: 17 },
+        20: { up: 18, down: 25 },
+        25: { up: 23, left: 20 },
+        23: { up: 29, down: 22, right: 26 },
+        26: { up: 23, down: 23 },
+        29: { up: 30, down: 28 },
+        28: { up: 23, down: 29 },
+        30: { up: 32, down: 29 },
+        32: { left: 36, right: 30 },
+        36: { up: 39, down: 32 },
+        39: { down: 40 },
+        40: { up: 38 },
+        38: { up: 31, down: 40 },
+        31: { up: 28, down: 38 },
+      };
+      let activeRoutes = photoRoutes;
+      let selectedStation = stations[0];
 
       function renderStationResults(query = "") {
         const normalizedQuery = query.toLocaleLowerCase("ko-KR").replace(/\s/g, "");
@@ -255,7 +389,7 @@
           resultButton.type = "button";
           resultButton.setAttribute("aria-label", `${station.name}, ${station.line}, 길안내 시작`);
           resultButton.innerHTML = `
-            <span class="line-number" aria-hidden="true">2</span>
+            <span class="line-number" aria-hidden="true">${station.lineNumber}</span>
             <span class="station-result-copy">
               <strong>${station.name}</strong>
               <span>${station.line} · ${station.area}</span>
@@ -263,10 +397,24 @@
             <span class="result-arrow" aria-hidden="true">›</span>
           `;
           resultButton.addEventListener("click", () => {
-            showStep(0);
+            selectedStation = station;
+            activeRoutes = station.routeSet === "sinchang" ? sinchangRoutes : photoRoutes;
+            photoHistory = [];
+            stationTitle.textContent = `${station.name} 길안내`;
+            backLabel.textContent = station.chooseDirection ? "방향 선택" : "역 검색";
+            backToSearch.setAttribute(
+              "aria-label",
+              station.chooseDirection ? "지하철 방향 선택으로 돌아가기" : "역 검색으로 돌아가기",
+            );
             searchScreen.hidden = true;
-            guideScreen.hidden = false;
-            image.focus({ preventScroll: true });
+            if (station.chooseDirection) {
+              directionScreen.hidden = false;
+            } else {
+              directionScreen.hidden = true;
+              guideScreen.hidden = false;
+              showPhoto(station.startPhoto);
+              image.focus({ preventScroll: true });
+            }
           });
           stationResults.append(resultButton);
         });
@@ -280,54 +428,106 @@
 
       searchInput.addEventListener("input", () => renderStationResults(searchInput.value));
 
-      backToSearch.addEventListener("click", () => {
-        guideScreen.hidden = true;
+      document.querySelector("#direction-back").addEventListener("click", () => {
+        directionScreen.hidden = true;
         searchScreen.hidden = false;
         searchInput.focus();
       });
 
-      function showStep(nextStep) {
-        if (nextStep < 0 || nextStep >= locations.length || nextStep === currentStep) return;
-
-        currentStep = nextStep;
-        const location = locations[currentStep];
-        image.classList.add("is-changing");
-        window.setTimeout(() => {
-          image.src = location.image;
-          image.alt = location.alt;
-          image.classList.remove("is-changing");
-        }, 120);
-
-        forwardLabel.textContent = location.forwardLabel;
-        backLabel.textContent = location.backLabel;
-        backButton.disabled = currentStep === 0;
-        forwardButton.disabled = currentStep === locations.length - 1;
-      }
-
-      backButton.addEventListener("click", () => showStep(currentStep - 1));
-      forwardButton.addEventListener("click", () => showStep(currentStep + 1));
-
-      document.addEventListener("keydown", (event) => {
-        if (guideScreen.hidden) return;
-        if (event.altKey || event.ctrlKey || event.metaKey || event.shiftKey) return;
-        if (event.key === "ArrowUp") showStep(currentStep + 1);
-        if (event.key === "ArrowDown") showStep(currentStep - 1);
+      document.querySelectorAll("[data-start-photo]").forEach((button) => {
+        button.addEventListener("click", () => {
+          photoHistory = [];
+          activeRoutes = selectedStation.routeSet === "sinchang" ? sinchangRoutes : photoRoutes;
+          directionScreen.hidden = true;
+          guideScreen.hidden = false;
+          showPhoto(Number(button.dataset.startPhoto));
+          image.focus({ preventScroll: true });
+        });
       });
 
-      image.addEventListener("touchstart", (event) => {
-        touchStartY = event.changedTouches[0].clientY;
-      }, { passive: true });
+      backToSearch.addEventListener("click", () => {
+        guideScreen.hidden = true;
+        if (selectedStation.chooseDirection) {
+          directionScreen.hidden = false;
+        } else {
+          searchScreen.hidden = false;
+          searchInput.focus();
+        }
+      });
 
-      image.addEventListener("touchend", (event) => {
-        if (touchStartY === null) return;
-        const distance = event.changedTouches[0].clientY - touchStartY;
-        if (Math.abs(distance) > 50) showStep(currentStep + (distance < 0 ? 1 : -1));
-        touchStartY = null;
-      }, { passive: true });
+      function showPhoto(photo, remember = false) {
+        if (!Number.isInteger(photo) || photo < 1 || (photo > 52 && photo !== 53)) {
+          throw new RangeError(`잘못된 사진 번호입니다: ${photo}`);
+        }
+        if (remember && currentPhoto !== null) photoHistory.push(currentPhoto);
+        currentPhoto = photo;
+        image.classList.add("is-changing");
+        image.src = `${selectedStation.imageFolder}/${photo}.webp`;
+        image.alt = `${selectedStation.name} 사진 ${photo}번`;
+        photoError.hidden = true;
+        window.setTimeout(() => image.classList.remove("is-changing"), 120);
+        renderArrows();
+      }
 
-      backButton.disabled = true;
-      forwardLabel.textContent = locations[0].forwardLabel;
-      backLabel.textContent = locations[0].backLabel;
+      function renderArrows() {
+        const route = activeRoutes[currentPhoto] || {};
+        const hasDiagonalRoutes = ["upLeft", "downLeft", "upRight", "downRight"]
+          .some((direction) => route[direction] !== undefined);
+        Object.keys(buttons).forEach((direction) => {
+          buttons[direction].hidden = route[direction] === undefined
+            && (direction !== "down" || hasDiagonalRoutes || !selectedStation.historyBack);
+        });
+        buttons.down.setAttribute(
+          "aria-label",
+          currentPhoto === 1 || currentPhoto === 24
+            ? selectedStation.chooseDirection ? "지하철 방향 선택으로 돌아가기" : "이전 사진으로 이동"
+            : route.down === undefined ? "이전 사진으로 이동" : "아래 사진으로 이동",
+        );
+        buttons.down.title = buttons.down.getAttribute("aria-label");
+      }
+
+      function move(direction) {
+        if (direction === "down") {
+          const nextPhoto = activeRoutes[currentPhoto]?.down;
+          if (nextPhoto !== undefined) {
+            showPhoto(nextPhoto, true);
+            return;
+          }
+          if (!selectedStation.historyBack) return;
+          if (currentPhoto === 1 || currentPhoto === 24 || photoHistory.length === 0) {
+            guideScreen.hidden = true;
+            directionScreen.hidden = false;
+            currentPhoto = null;
+            return;
+          }
+          showPhoto(photoHistory.pop());
+          return;
+        }
+        const nextPhoto = activeRoutes[currentPhoto]?.[direction];
+        if (nextPhoto !== undefined) showPhoto(nextPhoto, true);
+      }
+
+      document.addEventListener("keydown", (event) => {
+        if (guideScreen.hidden || event.target instanceof HTMLInputElement || event.target instanceof HTMLButtonElement) return;
+        if (event.altKey || event.ctrlKey || event.metaKey || event.shiftKey) return;
+        const direction = { ArrowUp: "up", ArrowDown: "down", ArrowLeft: "left", ArrowRight: "right" }[event.key];
+        if (direction) {
+          event.preventDefault();
+          move(direction);
+        }
+      });
+
+      Object.entries(buttons).forEach(([direction, button]) => {
+        button.addEventListener("click", () => move(direction));
+      });
+      image.addEventListener("load", () => {
+        image.classList.remove("is-changing");
+        photoError.hidden = true;
+      });
+      image.addEventListener("error", () => {
+        photoError.textContent = `사진 ${currentPhoto}번을 불러오지 못했습니다. ${selectedStation.imageFolder}/${currentPhoto}.webp 파일을 확인해 주세요.`;
+        photoError.hidden = false;
+      });
       renderStationResults();
     </script>
   </body>
