@@ -90,13 +90,22 @@
       .nav-down { bottom: 0; left: 50%; transform: translateX(-50%); }
       .nav-left { top: 50%; left: 0; transform: translateY(-50%); }
       .nav-right { top: 50%; right: 0; transform: translateY(-50%); }
-      .nav-up-left { top: 18%; left: 25%; transform: translate(-50%, -50%); }
-      .nav-down-left { bottom: 18%; left: 25%; transform: translate(-50%, 50%); }
-      .nav-up-right { top: 18%; right: 25%; transform: translate(50%, -50%); }
-      .nav-down-right { right: 25%; bottom: 18%; transform: translate(50%, 50%); }
+      .nav-up-left { top: 22%; left: 25%; transform: translate(-50%, -50%); }
+      .nav-down-left { top: 78%; left: 25%; transform: translate(-50%, -50%); }
+      .nav-up-right { top: 22%; right: 25%; transform: translate(50%, -50%); }
+      .nav-down-right { top: 78%; right: 25%; transform: translate(50%, -50%); }
       .nav-arrow:hover:not(:disabled) { background: var(--lime); }
       .nav-arrow:focus-visible { outline: 3px solid var(--lime); outline-offset: 4px; }
       .nav-arrow svg { width: 25px; height: 25px; }
+      .coupon-hotspot { position: absolute; z-index: 4; width: 190px; height: 74px; padding: 0; border: 0; background: transparent; cursor: pointer; transform: translate(-50%, -50%); }
+      .coupon-hotspot img { display: block; width: 100%; height: 100%; object-fit: contain; }
+      .coupon-hotspot:focus-visible { outline: 3px solid #fff; outline-offset: 4px; border-radius: 50%; }
+      .coupon-screen { position: absolute; z-index: 5; inset: 0; display: grid; place-items: center; padding: 24px; background: rgb(0 0 0 / 14%); }
+      .coupon-card { position: relative; display: grid; width: min(48vw, 500px); max-width: calc(100vw - 64px); max-height: 82svh; place-items: center; }
+      .coupon-image { display: block; width: 100%; max-height: 82svh; object-fit: contain; }
+      .coupon-close { position: absolute; top: -18px; right: -18px; display: grid; width: 54px; height: 54px; place-items: center; border: 0; border-radius: 50%; background: #e53935; color: #111; cursor: pointer; font-size: 32px; font-weight: 500; line-height: 1; box-shadow: 0 3px 12px rgb(0 0 0 / 25%); }
+      .coupon-close:hover { background: #f04a46; }
+      .coupon-close:focus-visible { outline: 3px solid #fff; outline-offset: 3px; }
       .photo-error { position: absolute; z-index: 3; right: 16px; bottom: 18px; left: 16px; padding: 12px; background: rgb(70 15 15 / 90%); color: #fff; font-size: 13px; text-align: center; }
       @media (max-width: 700px) {
         .search-screen { padding: 22px 20px 36px; }
@@ -116,6 +125,11 @@
         .photo-tag strong { font-size: 13px; }
         .direction-controls { top: 78%; width: min(100% - 32px, 380px); height: min(30vh, 230px); min-height: 180px; }
         .nav-arrow { width: 56px; height: 56px; }
+        .coupon-hotspot { width: 150px; height: 59px; }
+        .coupon-screen { padding: 24px; }
+        .coupon-card { width: min(68vw, 420px); max-width: calc(100vw - 64px); max-height: 78svh; }
+        .coupon-image { max-height: 78svh; }
+        .coupon-close { top: -14px; right: -14px; width: 46px; height: 46px; font-size: 28px; }
         .direction-content { padding: 12px 4px; }
       }
 
@@ -156,17 +170,49 @@
                 aria-controls="station-results"
               />
             </form>
-            <div class="results-heading"><span>검색 가능한 역</span><span id="results-count">1개 역</span></div>
+            <div class="results-heading"><span>검색 가능한 역</span><span id="results-count">2개 역</span></div>
             <div class="station-results" id="station-results" aria-live="polite"></div>
             <p class="search-footnote">현재 길안내를 이용할 수 있는 역을 표시합니다.</p>
           </div>
         </section>
 
+        <section class="direction-screen" id="journey-screen" aria-labelledby="journey-title" hidden>
+          <div class="direction-content">
+            <button class="direction-back" id="journey-back" type="button">← 역 검색</button>
+            <h1 class="direction-heading" id="journey-title">승차 또는 하차를 선택해 주세요</h1>
+            <p class="direction-description">온양온천역에서 이동할 내용을 선택해 주세요.</p>
+            <div class="direction-options">
+              <button class="direction-choice" type="button" data-journey="alight">
+                <span><strong>승차</strong><small>열차 방향을 선택합니다</small></span><span class="result-arrow" aria-hidden="true">›</span>
+              </button>
+              <button class="direction-choice" type="button" data-journey="ride">
+                <span><strong>하차</strong><small>이용할 출구를 선택합니다</small></span><span class="result-arrow" aria-hidden="true">›</span>
+              </button>
+            </div>
+          </div>
+        </section>
+
+        <section class="direction-screen" id="exit-screen" aria-labelledby="exit-title" hidden>
+          <div class="direction-content">
+            <button class="direction-back" id="exit-back" type="button">← 승차·하차 선택</button>
+            <h1 class="direction-heading" id="exit-title">출구를 선택해 주세요</h1>
+            <p class="direction-description">하차 후 이동할 출구를 선택해 주세요.</p>
+            <div class="direction-options">
+              <button class="direction-choice" type="button" data-exit-start="38">
+                <span><strong>1번 출구</strong></span><span class="result-arrow" aria-hidden="true">›</span>
+              </button>
+              <button class="direction-choice" type="button" data-exit-start="40">
+                <span><strong>2번 출구</strong></span><span class="result-arrow" aria-hidden="true">›</span>
+              </button>
+            </div>
+          </div>
+        </section>
+
         <section class="direction-screen" id="direction-screen" aria-labelledby="direction-title" hidden>
           <div class="direction-content">
-            <button class="direction-back" id="direction-back" type="button">← 역 검색</button>
+            <button class="direction-back" id="direction-back" type="button">← 승차·하차 선택</button>
             <h1 class="direction-heading" id="direction-title">지하철 방향을 선택해 주세요</h1>
-            <p class="direction-description">1호선 온양온천역에서 이동할 방향을 선택하면 해당 위치의 사진이 표시됩니다.</p>
+            <p class="direction-description">1호선 온양온천역 승차 방향을 선택해 주세요.</p>
             <div class="direction-options">
               <button class="direction-choice" type="button" data-start-photo="1">
                 <span><strong>아산 방향</strong><small>온양온천역 승강장 길안내</small></span><span class="result-arrow" aria-hidden="true">›</span>
@@ -182,10 +228,10 @@
           <header class="topbar">
             <div class="brand" aria-label="역 안 길찾기">
               <span class="brand-icon" aria-hidden="true">↗</span>
-              <span class="brand-name"><strong id="station-name">온양온천역 길안내</strong><span>STATION STREET VIEW</span></span>
+              <span class="brand-name"><strong id="guide-station-name">온양온천역 길안내</strong><span>STATION STREET VIEW</span></span>
             </div>
-            <button class="back-to-search" id="back-to-search" type="button" aria-label="지하철 방향 선택으로 돌아가기">
-              <span aria-hidden="true">←</span> <span id="back-label">방향 선택</span>
+            <button class="back-to-search" id="back-to-search" type="button" aria-label="역 선택으로 돌아가기">
+              <span aria-hidden="true">←</span> 역 선택
             </button>
           </header>
           <section class="viewer" aria-label="역 내부 길안내 사진">
@@ -197,6 +243,9 @@
             alt="온양온천역 사진 1번"
             fetchpriority="high"
           />
+          <button class="coupon-hotspot" id="coupon-hotspot" type="button" aria-label="쿠폰 보기" hidden>
+            <img src="Coupon/할인_버튼.png" alt="" />
+          </button>
           <div class="direction-controls" aria-label="이동 방향 선택">
             <button class="nav-arrow nav-up" id="up-button" type="button" aria-label="다음 사진으로 이동" title="다음 사진으로 이동" hidden>
               <svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M12 19V5m0 0L6.5 10.5M12 5l5.5 5.5" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" /></svg>
@@ -223,6 +272,12 @@
               <svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M5 5 19 19m0 0v-7m0 7h-7" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" /></svg>
             </button>
           </div>
+          <div class="coupon-screen" id="coupon-screen" aria-label="할인 쿠폰" hidden>
+            <div class="coupon-card">
+              <img class="coupon-image" src="Coupon/Coupon_QR.png" alt="3,000원 이상 구매 시 10% 할인 쿠폰 QR 코드" />
+              <button class="coupon-close" id="coupon-back" type="button" aria-label="쿠폰 닫기" title="쿠폰 닫기">×</button>
+            </div>
+          </div>
           <div class="photo-error" id="photo-error" role="alert" hidden></div>
           </section>
         </section>
@@ -232,15 +287,20 @@
     <script>
       const image = document.querySelector("#scene-image");
       const searchScreen = document.querySelector("#search-screen");
+      const journeyScreen = document.querySelector("#journey-screen");
+      const exitScreen = document.querySelector("#exit-screen");
       const directionScreen = document.querySelector("#direction-screen");
       const guideScreen = document.querySelector("#guide-screen");
       const searchInput = document.querySelector("#station-search");
       const stationResults = document.querySelector("#station-results");
       const resultsCount = document.querySelector("#results-count");
       const backToSearch = document.querySelector("#back-to-search");
-      const backLabel = document.querySelector("#back-label");
-      const stationTitle = document.querySelector("#station-name");
+      const guideStationName = document.querySelector("#guide-station-name");
       const photoError = document.querySelector("#photo-error");
+      const directionControls = document.querySelector(".direction-controls");
+      const couponHotspot = document.querySelector("#coupon-hotspot");
+      const couponScreen = document.querySelector("#coupon-screen");
+      const couponBack = document.querySelector("#coupon-back");
       const buttons = {
         up: document.querySelector("#up-button"),
         down: document.querySelector("#down-button"),
@@ -253,78 +313,54 @@
       };
       let currentPhoto = null;
       let photoHistory = [];
-      const stations = [
-        {
-          id: "onyang",
-          name: "온양온천역",
-          line: "1호선",
-          lineNumber: "1",
-          area: "충청남도 아산시",
-          searchTerms: ["온양온천역", "온양온천", "온양", "1호선"],
-          imageFolder: "Line_1_Onyangoncheon_Station",
-          routeSet: "onyang",
-          chooseDirection: true,
-          historyBack: true,
-        },
-        {
-          id: "sinchang",
-          name: "신창역",
-          line: "1호선",
-          lineNumber: "1",
-          area: "충청남도 아산시",
-          searchTerms: ["신창역", "신창", "순천향대", "1호선"],
-          imageFolder: "Line_1_Sinchang_Station",
-          routeSet: "sinchang",
-          chooseDirection: false,
-          startPhoto: 1,
-          historyBack: false,
-        },
-      ];
-      const photoRoutes = {
+      let activeStation = null;
+      let activeMode = null;
+      let couponIsOpen = false;
+      const onyangRoutes = {
         1: { left: 2, right: 3 },
         2: { up: 4 },
         3: { up: 9 },
-        4: { up: 6, down: 5 },
-        5: { up: 1 },
-        6: { up: 7 },
-        7: { up: 14, down: 8 },
-        8: { up: 5 },
-        9: { up: 10, down: 53 },
-        10: { up: 15, down: 11 },
-        11: { up: 53 },
-        14: { up: 20, down: 13 },
-        15: { up: 20, down: 12 },
-        17: { up: 27 },
-        18: { up: 45, down: 16 },
-        19: { up: 45, down: 17 },
+        4: { up: 7 },
+        7: { up: 14 },
+        9: { up: 10 },
+        10: { up: 15 },
+        14: { up: 20 },
+        15: { up: 20 },
+        18: { up: 45 },
+        19: { up: 45 },
         20: { up: 45 },
-        21: { up: 23 },
-        22: { up: 18, down: 21 },
-        23: { up: 24 },
+        22: { up: 18 },
         24: { left: 25, right: 26 },
         25: { up: 28 },
         26: { up: 22 },
-        27: { up: 29 },
-        28: { up: 19, down: 27 },
-        29: { up: 24 },
-        30: { up: 31, down: 46 },
-        31: { up: 32, down: 44 },
-        32: { left: 33, right: 34, down: 44 },
-        33: { up: 36, down: 44 },
-        34: { up: 35, down: 44 },
-        35: { down: 40 },
-        36: { down: 38 },
+        28: { up: 19 },
+        30: { up: 31 },
+        31: { up: 32 },
+        32: { left: 33, right: 34 },
+        33: { up: 36 },
+        34: { up: 35 },
+        45: { up: 30 },
+      };
+      const onyangAlightRoutes = {
         38: { up: 42 },
         40: { up: 41 },
-        41: { up: 44 },
-        42: { up: 44 },
+        41: { up: 43 },
+        42: { up: 43 },
+        43: { up: 44 },
         44: { up: 46 },
-        45: { up: 30 },
-        46: { upLeft: 47, downLeft: 49, upRight: 48, downRight: 17 },
-        47: { up: 11 },
-        48: { up: 21 },
-        49: { up: 8 },
-        53: { up: 1 },
+        46: { upLeft: 47, downLeft: 49, upRight: 16, downRight: 48 },
+        47: { up: 16 },
+        16: { up: 21 },
+        21: { up: 23 },
+        23: {},
+        49: { up: 17 },
+        17: { up: 27 },
+        27: { up: 29 },
+        29: {},
+        11: { up: 53 },
+        53: {},
+        13: { up: 27 },
+        48: { up: 13 },
       };
       const sinchangRoutes = {
         1: { left: 3, right: 2 },
@@ -332,36 +368,63 @@
         3: { up: 4, down: 1 },
         4: { up: 6, down: 3 },
         6: { up: 7, down: 4 },
-        7: { up: 23, down: 6, left: 22 },
-        22: { down: 7, right: 21, left: 8 },
-        21: { up: 20, down: 22 },
+        7: { left: 22, up: 23, down: 6 },
         8: { up: 9, down: 22 },
         9: { up: 10, left: 14 },
         10: { left: 11, right: 12 },
         11: { down: 10 },
         12: { up: 13, down: 10 },
         13: { up: 24, down: 12, right: 14 },
-        24: { up: 23, down: 13, left: 20 },
-        14: { up: 15, left: 13 },
+        14: { left: 13, up: 15 },
         15: { up: 14, down: 17 },
         17: { up: 15, right: 18 },
-        18: { up: 20, left: 17 },
+        18: { left: 17, up: 20 },
         20: { up: 18, down: 25 },
-        25: { up: 23, left: 20 },
-        23: { up: 29, down: 22, right: 26 },
-        26: { up: 23, down: 23 },
-        29: { up: 30, down: 28 },
+        21: { up: 20, down: 22 },
+        22: { left: 8, right: 21, down: 7 },
+        23: { up: 29, right: 26, down: 22 },
+        24: { left: 20, up: 23, down: 13 },
+        25: { left: 20, up: 23 },
+        26: { up: 6, down: 23 },
         28: { up: 23, down: 29 },
+        29: { up: 30, down: 28 },
         30: { up: 32, down: 29 },
+        31: { up: 28, down: 38 },
         32: { left: 36, right: 30 },
         36: { up: 39, down: 32 },
+        38: { up: 31, down: 40 },
         39: { down: 40 },
         40: { up: 38 },
-        38: { up: 31, down: 40 },
-        31: { up: 28, down: 38 },
       };
-      let activeRoutes = photoRoutes;
-      let selectedStation = stations[0];
+      const stations = [
+        {
+          name: "온양온천역",
+          line: "1호선",
+          lineNumber: "1",
+          area: "충청남도 아산시",
+          searchTerms: ["온양온천역", "온양온천", "온양", "1호선"],
+          folder: "Line_1_Onyangoncheon_Station",
+          extension: "webp",
+          photoCount: 52,
+          requiresDirection: true,
+          startPhotos: [1, 24],
+          routes: onyangRoutes,
+          alightRoutes: onyangAlightRoutes,
+        },
+        {
+          name: "신창역",
+          line: "1호선",
+          lineNumber: "1",
+          area: "충청남도 아산시",
+          searchTerms: ["신창역", "신창"],
+          folder: "Line_1_Sinchang_Station",
+          extension: "webp",
+          photoCount: 40,
+          requiresDirection: false,
+          startPhotos: [1],
+          routes: sinchangRoutes,
+        },
+      ];
 
       function renderStationResults(query = "") {
         const normalizedQuery = query.toLocaleLowerCase("ko-KR").replace(/\s/g, "");
@@ -397,24 +460,25 @@
             <span class="result-arrow" aria-hidden="true">›</span>
           `;
           resultButton.addEventListener("click", () => {
-            selectedStation = station;
-            activeRoutes = station.routeSet === "sinchang" ? sinchangRoutes : photoRoutes;
+            activeStation = station;
+            activeMode = null;
             photoHistory = [];
-            stationTitle.textContent = `${station.name} 길안내`;
-            backLabel.textContent = station.chooseDirection ? "방향 선택" : "역 검색";
+            searchScreen.hidden = true;
+            guideStationName.textContent = `${station.name} 길안내`;
             backToSearch.setAttribute(
               "aria-label",
-              station.chooseDirection ? "지하철 방향 선택으로 돌아가기" : "역 검색으로 돌아가기",
+              station.requiresDirection ? "방향 선택으로 돌아가기" : "역 검색으로 돌아가기",
             );
-            searchScreen.hidden = true;
-            if (station.chooseDirection) {
-              directionScreen.hidden = false;
-            } else {
-              directionScreen.hidden = true;
-              guideScreen.hidden = false;
-              showPhoto(station.startPhoto);
-              image.focus({ preventScroll: true });
+            backToSearch.lastChild.textContent = station.requiresDirection ? " 방향 선택" : " 역 검색";
+            if (station.requiresDirection) {
+              journeyScreen.hidden = false;
+              return;
             }
+            photoHistory = [];
+            directionScreen.hidden = true;
+            guideScreen.hidden = false;
+            showPhoto(station.startPhotos[0]);
+            image.focus({ preventScroll: true });
           });
           stationResults.append(resultButton);
         });
@@ -430,81 +494,183 @@
 
       document.querySelector("#direction-back").addEventListener("click", () => {
         directionScreen.hidden = true;
+        journeyScreen.hidden = false;
+      });
+
+      document.querySelector("#journey-back").addEventListener("click", () => {
+        journeyScreen.hidden = true;
         searchScreen.hidden = false;
         searchInput.focus();
       });
 
-      document.querySelectorAll("[data-start-photo]").forEach((button) => {
+      document.querySelector("#exit-back").addEventListener("click", () => {
+        exitScreen.hidden = true;
+        journeyScreen.hidden = false;
+      });
+
+      document.querySelectorAll("[data-journey]").forEach((button) => {
         button.addEventListener("click", () => {
-          photoHistory = [];
-          activeRoutes = selectedStation.routeSet === "sinchang" ? sinchangRoutes : photoRoutes;
-          directionScreen.hidden = true;
-          guideScreen.hidden = false;
-          showPhoto(Number(button.dataset.startPhoto));
-          image.focus({ preventScroll: true });
+          activeMode = button.dataset.journey;
+          journeyScreen.hidden = true;
+          if (activeMode === "ride") {
+            directionScreen.hidden = false;
+          } else {
+            exitScreen.hidden = false;
+          }
         });
       });
 
+      document.querySelectorAll("[data-start-photo]").forEach((button) => {
+        button.addEventListener("click", () => {
+          if (!activeStation) {
+            throw new Error("역을 먼저 선택해 주세요.");
+          }
+          startGuide(Number(button.dataset.startPhoto), "ride");
+        });
+      });
+
+      document.querySelectorAll("[data-exit-start]").forEach((button) => {
+        button.addEventListener("click", () => {
+          startGuide(Number(button.dataset.exitStart), "alight");
+        });
+      });
+
+      function startGuide(photo, mode) {
+        photoHistory = [];
+        activeMode = mode;
+        journeyScreen.hidden = true;
+        directionScreen.hidden = true;
+        exitScreen.hidden = true;
+        guideScreen.hidden = false;
+        showPhoto(photo);
+        image.focus({ preventScroll: true });
+      }
+
       backToSearch.addEventListener("click", () => {
         guideScreen.hidden = true;
-        if (selectedStation.chooseDirection) {
-          directionScreen.hidden = false;
+        photoHistory = [];
+        if (activeStation?.requiresDirection) {
+          if (activeMode === "ride") {
+            directionScreen.hidden = false;
+          } else if (activeMode === "alight") {
+            exitScreen.hidden = false;
+          } else {
+            journeyScreen.hidden = false;
+          }
         } else {
+          currentPhoto = null;
+          activeMode = null;
           searchScreen.hidden = false;
           searchInput.focus();
         }
       });
 
       function showPhoto(photo, remember = false) {
-        if (!Number.isInteger(photo) || photo < 1 || (photo > 52 && photo !== 53)) {
+        const photoLimit = activeMode === "alight" ? 53 : activeStation?.photoCount;
+        if (!activeStation || !Number.isInteger(photo) || photo < 1 || photo > photoLimit) {
           throw new RangeError(`잘못된 사진 번호입니다: ${photo}`);
         }
         if (remember && currentPhoto !== null) photoHistory.push(currentPhoto);
         currentPhoto = photo;
+        couponIsOpen = false;
+        couponScreen.hidden = true;
         image.classList.add("is-changing");
-        image.src = `${selectedStation.imageFolder}/${photo}.webp`;
-        image.alt = `${selectedStation.name} 사진 ${photo}번`;
+        image.src = `${activeStation.folder}/${photo}.${activeStation.extension}`;
+        image.alt = `${activeStation.name} 사진 ${photo}번`;
         photoError.hidden = true;
         window.setTimeout(() => image.classList.remove("is-changing"), 120);
         renderArrows();
+        positionCouponHotspot();
       }
 
       function renderArrows() {
-        const route = activeRoutes[currentPhoto] || {};
-        const hasDiagonalRoutes = ["upLeft", "downLeft", "upRight", "downRight"]
-          .some((direction) => route[direction] !== undefined);
+        const routes = activeMode === "alight" ? activeStation?.alightRoutes : activeStation?.routes;
+        const route = getCurrentRoute(routes);
+        directionControls.hidden = couponIsOpen;
         Object.keys(buttons).forEach((direction) => {
+          const usesHistoryBack = direction === "down"
+            && photoHistory.length > 0
+            && (activeMode === "alight" || activeStation?.requiresDirection);
+          const returnsToDirection = activeStation?.requiresDirection
+            && direction === "down"
+            && activeMode === "ride"
+            && activeStation.startPhotos.includes(currentPhoto);
           buttons[direction].hidden = route[direction] === undefined
-            && (direction !== "down" || hasDiagonalRoutes || !selectedStation.historyBack);
+            && !usesHistoryBack
+            && !returnsToDirection;
         });
         buttons.down.setAttribute(
           "aria-label",
-          currentPhoto === 1 || currentPhoto === 24
-            ? selectedStation.chooseDirection ? "지하철 방향 선택으로 돌아가기" : "이전 사진으로 이동"
-            : route.down === undefined ? "이전 사진으로 이동" : "아래 사진으로 이동",
+          activeStation?.requiresDirection && activeMode === "ride" && activeStation.startPhotos.includes(currentPhoto)
+            ? "지하철 방향 선택으로 돌아가기"
+            : route.down !== undefined || activeStation?.requiresDirection ? "이전 사진으로 이동" : "아래 사진으로 이동",
         );
         buttons.down.title = buttons.down.getAttribute("aria-label");
+        couponHotspot.hidden = couponIsOpen || currentPhoto !== 33 || activeStation?.name !== "온양온천역";
+        positionCouponHotspot();
       }
 
+      function positionCouponHotspot() {
+        if (currentPhoto !== 33 || !image.naturalWidth || !image.naturalHeight) return;
+        const viewer = image.closest(".viewer");
+        const scale = Math.max(viewer.clientWidth / image.naturalWidth, viewer.clientHeight / image.naturalHeight);
+        const renderedWidth = image.naturalWidth * scale;
+        const renderedHeight = image.naturalHeight * scale;
+        const mobileCouponPosition = window.matchMedia("(max-width: 700px)").matches;
+        const objectPositionX = mobileCouponPosition ? 1 : 0.5;
+        const offsetX = (viewer.clientWidth - renderedWidth) * objectPositionX;
+        const offsetY = (viewer.clientHeight - renderedHeight) * 0.5;
+        image.style.objectPosition = mobileCouponPosition ? "right center" : "center";
+        couponHotspot.style.left = `${offsetX + image.naturalWidth * 0.92 * scale}px`;
+        couponHotspot.style.top = `${offsetY + image.naturalHeight * 0.326 * scale}px`;
+      }
+
+      couponHotspot.addEventListener("click", () => {
+        couponIsOpen = true;
+        couponScreen.hidden = false;
+        renderArrows();
+        couponBack.focus();
+      });
+
+      couponBack.addEventListener("click", () => {
+        couponIsOpen = false;
+        couponScreen.hidden = true;
+        renderArrows();
+        couponHotspot.focus();
+      });
+
+      window.addEventListener("resize", positionCouponHotspot);
       function move(direction) {
         if (direction === "down") {
-          const nextPhoto = activeRoutes[currentPhoto]?.down;
+          const routes = activeMode === "alight" ? activeStation?.alightRoutes : activeStation?.routes;
+          const nextPhoto = getCurrentRoute(routes).down;
           if (nextPhoto !== undefined) {
             showPhoto(nextPhoto, true);
             return;
           }
-          if (!selectedStation.historyBack) return;
-          if (currentPhoto === 1 || currentPhoto === 24 || photoHistory.length === 0) {
+          if (activeStation?.requiresDirection
+            && activeMode === "ride"
+            && activeStation.startPhotos.includes(currentPhoto)) {
             guideScreen.hidden = true;
             directionScreen.hidden = false;
             currentPhoto = null;
             return;
           }
+          if (photoHistory.length === 0) return;
           showPhoto(photoHistory.pop());
           return;
         }
-        const nextPhoto = activeRoutes[currentPhoto]?.[direction];
+        const routes = activeMode === "alight" ? activeStation?.alightRoutes : activeStation?.routes;
+        const nextPhoto = getCurrentRoute(routes)[direction];
         if (nextPhoto !== undefined) showPhoto(nextPhoto, true);
+      }
+
+      function getCurrentRoute(routes) {
+        const route = routes?.[currentPhoto] || {};
+        if (activeMode === "alight" && currentPhoto === 16 && photoHistory[photoHistory.length - 1] === 46) {
+          return { ...route, up: 11 };
+        }
+        return route;
       }
 
       document.addEventListener("keydown", (event) => {
@@ -523,9 +689,10 @@
       image.addEventListener("load", () => {
         image.classList.remove("is-changing");
         photoError.hidden = true;
+        positionCouponHotspot();
       });
       image.addEventListener("error", () => {
-        photoError.textContent = `사진 ${currentPhoto}번을 불러오지 못했습니다. ${selectedStation.imageFolder}/${currentPhoto}.webp 파일을 확인해 주세요.`;
+        photoError.textContent = `사진 ${currentPhoto}번을 불러오지 못했습니다. ${activeStation?.folder}/${currentPhoto}.${activeStation?.extension} 파일을 확인해 주세요.`;
         photoError.hidden = false;
       });
       renderStationResults();
